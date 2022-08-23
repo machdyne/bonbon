@@ -2,7 +2,7 @@
 
 Bonbon is a compact FPGA computer designed by Lone Dynamics Corporation.
 
-!(Bonbon Computer)[https://github.com/machdyne/bonbon/blob/9f1226d44e0631d2cd9ea7e3ce0623f97f2f18ad/bonbon.png]
+![Bonbon Computer](https://github.com/machdyne/bonbon/blob/9f1226d44e0631d2cd9ea7e3ce0623f97f2f18ad/bonbon.png)
 
 This repo contains schematics, pinouts, example firmware, gateware and documentation.
 
