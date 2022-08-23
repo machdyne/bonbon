@@ -1,4 +1,4 @@
-# Riegel Computer
+# Bonbon Computer
 
 Bonbon is a compact FPGA computer designed by Lone Dynamics Corporation.
 
