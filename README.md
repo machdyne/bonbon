@@ -42,6 +42,10 @@ The system clock (CLK\_RP) is 126MHz by default.
 
 The firmware can be updated by holding down the BOOTSEL button, connecting the Micro-USB port to your computer, and then dragging and dropping a new UF2 file to the device filesystem.
 
+## DDMI
+
+See this [SmolDVI fork](https://github.com/machdyne/SmolDVI) for an example of outputting video on the DDMI port.
+
 ## Pinouts
 
  * [MMOD](https://github.com/machdyne/mmod)
