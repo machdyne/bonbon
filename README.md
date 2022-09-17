@@ -34,7 +34,7 @@ Note: It should also be possible to program the MMOD over the USB-C port with a 
 
 ## Firmware
 
-Bonbon ships with RP2040 [firmware](firmware) based on the [https://github.com/machdyne/musli](Müsli) firmware which allows it to communicate with [ldprog](https://github.com/machdyne/ldprog).
+Bonbon ships with RP2040 [firmware](firmware) based on the [Müsli](https://github.com/machdyne/musli) firmware which allows it to communicate with [ldprog](https://github.com/machdyne/ldprog).
 
 The firmware is responsible for initializing the system, [configuring and outputting the system clock](https://raspberrypi.github.io/pico-sdk-doxygen/group__hardware__clocks.html#details), and either configuring the FPGA or telling the FPGA to configure itself from the MMOD.
 
