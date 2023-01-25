@@ -844,8 +844,8 @@ int main(void) {
 */
 
 	printf("enable clock output ...\n");
-	clock_gpio_init(24, CLOCKS_CLK_GPOUT2_CTRL_AUXSRC_VALUE_CLK_SYS, 1);
-//	clock_gpio_init(24, CLOCKS_CLK_GPOUT2_CTRL_AUXSRC_VALUE_CLK_USB, 1);
+//	clock_gpio_init(24, CLOCKS_CLK_GPOUT2_CTRL_AUXSRC_VALUE_CLK_SYS, 1);
+	clock_gpio_init(24, CLOCKS_CLK_GPOUT2_CTRL_AUXSRC_VALUE_CLK_USB, 1);
 //	clock_gpio_init(24, CLOCKS_CLK_GPOUT2_CTRL_AUXSRC_VALUE_CLKSRC_PLL_USB, 1);
 
 	printf("usb_device_init ...\n");
