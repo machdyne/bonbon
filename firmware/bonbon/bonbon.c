@@ -30,7 +30,7 @@
 
 #define MUSLI_CMD_REBOOT 0xf0
 
-#define ICE40_CDONE 18
+#define ICE40_CDONE 17
 #define ICE40_CRESET 19
 
 #define RAM_SS0 4
