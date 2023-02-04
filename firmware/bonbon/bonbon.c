@@ -61,9 +61,12 @@ void init_ldprog(void);
 void init_gpio(void);
 void init_pio_spi(void);
 void init_bonbon(void);
+void init_bonbon_postconf(void);
 void pio_spi_cfg(uint8_t pin_sck, uint8_t pin_mosi, uint8_t pin_miso);
 
 uint8_t spi_pio_offset;
+
+bool bonbon_fpga_configured = false;
 
 pio_spi_inst_t spi_pio = {
 	.pio = pio0,
@@ -100,7 +103,7 @@ void ep2_in_handler(uint8_t *buf, uint16_t len);
 // Global device address
 static bool should_set_address = false;
 static uint8_t dev_addr = 0;
-static volatile bool configured = false;
+static volatile bool usb_configured = false;
 
 // Global data buffer for EP0
 static uint8_t ep0_buf[64];
@@ -378,7 +381,7 @@ void usb_bus_reset(void) {
     dev_addr = 0;
     should_set_address = false;
     usb_hw->dev_addr_ctrl = 0;
-    configured = false;
+    usb_configured = false;
 }
 
 /**
@@ -435,7 +438,7 @@ void usb_set_device_configuration(volatile struct usb_setup_packet *pkt) {
     // Only one configuration so just acknowledge the request
     printf("Device Enumerated\r\n");
     usb_acknowledge_out_request();
-    configured = true;
+    usb_configured = true;
 }
 
 /**
@@ -728,6 +731,28 @@ void init_bonbon(void) {
 
 }
 
+void init_bonbon_postconf(void) {
+
+   bonbon_fpga_configured = true;
+
+   sleep_ms(100);
+
+   printf("fpga configured.\n");
+
+   sleep_ms(100);
+
+   // release CSPI bus
+   gpio_init(MUSLI_SPI_CSN_PIN);
+   gpio_init(MUSLI_SPI_TX_PIN);
+   gpio_init(MUSLI_SPI_RX_PIN);
+   gpio_init(MUSLI_SPI_SCK_PIN);
+   gpio_disable_pulls(MUSLI_SPI_CSN_PIN);
+   gpio_disable_pulls(MUSLI_SPI_TX_PIN);
+   gpio_disable_pulls(MUSLI_SPI_RX_PIN);
+   gpio_disable_pulls(MUSLI_SPI_SCK_PIN);
+
+}
+
 void ice40_reset(void) {
 
 	// pull CRESET low
@@ -765,10 +790,10 @@ void init_ldprog(void) {
 	gpio_set_function(MUSLI_SPI_TX_PIN, GPIO_FUNC_SPI);
 	spi_init(spi1, 1000 * 1000);
 
-	gpio_init(18);
-	gpio_init(19);
-	gpio_disable_pulls(18);
-	gpio_disable_pulls(19);
+	gpio_init(ICE40_CDONE);
+	gpio_init(ICE40_CRESET);
+	gpio_disable_pulls(ICE40_CDONE);
+	gpio_disable_pulls(ICE40_CRESET);
 
 }
 
@@ -858,19 +883,26 @@ int main(void) {
 	init_bonbon();
 	ice40_reset();
 
-	printf("waiting for usb configuration ...\n");
-	// Wait until configured
-	while (!configured) {
-		tight_loop_contents();
-	}
-
-	printf("waiting for data from host ...\n");
-	// Get ready to rx from host
-	usb_start_transfer(usb_get_endpoint_configuration(EP1_OUT_ADDR), NULL, 64);
+   int kfc_prev = 0;
+   int usb_started = 0;
 
 	// Everything is interrupt driven so just loop here
 	while (1) {
+
 		tight_loop_contents();
+
+		if (usb_configured && !usb_started) {
+			usb_start_transfer(usb_get_endpoint_configuration(EP1_OUT_ADDR),
+				NULL, 64);
+			usb_started = 1;
+		}
+
+		int cdone = gpio_get(ICE40_CDONE);
+		if (cdone && cdone != kfc_prev && !bonbon_fpga_configured) {
+			init_bonbon_postconf();
+		}
+		kfc_prev = cdone;
+
 	}
 
 	return 0;
